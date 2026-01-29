@@ -12,7 +12,7 @@ import { Toaster, toast } from 'sonner';
 import Footer from '@/components/Footer'
 import { useMutation } from '@tanstack/react-query'
 import { useAuth } from '@/stores/authStore'
-import Loading from '@/components/Loading'
+import Spinner from '@/components/Spinner'
 import InstagramLogo from '../../components/InstagramIcon'
 
 export default function Login() {
@@ -28,7 +28,7 @@ export default function Login() {
       navigate("/");
     }, 
     onError: (error) => {
-      toast.error(error);
+      toast.error(error.message);
     }
   })
 
@@ -73,7 +73,7 @@ export default function Login() {
                   className="w-full bg-[#0095f6] hover:bg-[#1877f2] font-semibold mt-4 py-6 rounded-full hover:cursor-pointer"
                   disabled={!form.formState.isValid || mutation.isPending}
                 >
-                  {mutation.isPending ? <Loading width='w-5' border="border-2 border-white"/> : "Log in"}
+                  {mutation.isPending ? <Spinner width='w-5' border="border-2 border-white"/> : "Log in"}
                 </Button>
               </form>
             </Form>

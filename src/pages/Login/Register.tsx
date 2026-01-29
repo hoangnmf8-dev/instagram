@@ -2,7 +2,7 @@ import { ChevronLeft } from 'lucide-react';
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
-import {Form } from "../../components/ui/form"
+import { Form } from "../../components/ui/form"
 import { registerSchema, type RegisterValues } from '@/schemas/loginSchema'
 import { FloatingInput } from '@/components/FloatingInput'
 import { Toaster, toast } from 'sonner';
@@ -11,7 +11,7 @@ import { Link, Navigate, useNavigate } from 'react-router-dom';
 import {register} from "../../services/authService"
 import { useMutation } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import Loading from '@/components/Loading';
+import Spinner from '@/components/Spinner';
 import { useAuth } from '@/stores/authStore';
 
 export default function Register() {
@@ -100,7 +100,7 @@ export default function Register() {
               </div>
               <Button type="submit" 
                 className={`w-full ${mutation.isPending ? "bg-blue-300 cursor-none" : "bg-insta-blue"} hover:bg-blue-700 mt-4 py-6 rounded-full transtion-all duration-150 hover:cursor-pointer text-white`} disabled={mutation.isPending}>
-                  {mutation.isPending ? <Loading width='w-5' border='border-2 border-white'/> : "Submit"}
+                  {mutation.isPending ? <Spinner width='w-5' border='border-2 border-white'/> : "Submit"}
               </Button>
             </form>
           </Form>

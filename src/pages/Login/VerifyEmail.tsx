@@ -12,7 +12,7 @@ import {
   AlertDescription,
 } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-import Loading from '@/components/Loading'
+import Spinner from '@/components/Spinner'
 import {useMutation} from "@tanstack/react-query"
 import { useParams } from 'react-router-dom'
 import { useAuth } from '@/stores/authStore'
@@ -45,7 +45,7 @@ export default function VerifyEmail() {
               onClick={resendMutation.mutate}
               disabled={resendMutation.isPending}
             >
-              {resendMutation.isPending ? <Loading width='w-5' border='border-2 border-white' /> : "Gửi lại Email xác thực"}
+              {resendMutation.isPending ? <Spinner width='w-5' border='border-2 border-white' /> : "Gửi lại Email xác thực"}
             </Button>
           </div>
         </CardContent>

@@ -31,10 +31,7 @@ const getNewToken = async () => {
 
 export const httpRequest = axios.create({
   baseURL: BASE_URL,
-  headers: {
-    "Content-Type": "application/json"
-  },
-  timeout: 10000
+  timeout: 7000
 });
 
 httpRequest.interceptors.request.use(config => {
@@ -47,7 +44,11 @@ httpRequest.interceptors.request.use(config => {
 
 httpRequest.interceptors.response.use(response => response, 
   async (error) => {
+    const originalRequest = error.config; 
     if(error.status === 401) {
+      if (originalRequest.url.includes("/api/auth/login")) {
+        return Promise.reject(error);
+      }
       if(!resfreshPromise) {
         resfreshPromise = getNewToken();
       }

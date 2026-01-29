@@ -7,7 +7,7 @@ import { Toaster, toast } from 'sonner';
 import Footer from '@/components/Footer'
 import { Link } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
-import Loading from '@/components/Loading';
+import Spinner from '@/components/Spinner';
 import { forgotPassword } from '@/services/authService';
 
 export default function ForgotPassword() {
@@ -17,7 +17,7 @@ export default function ForgotPassword() {
       toast.success("Đã gửi link reset mật khẩu đến email của bạn, vui lòng kiểm tra email để xác nhận");
     }, 
     onError: (error) => {
-      toast.error(error);
+      toast.error(error.message);
     }
   })
 
@@ -51,7 +51,7 @@ export default function ForgotPassword() {
               
               <Button type="submit" 
                 className={`w-full ${mutation.isPending ? "bg-blue-300 cursor-none" : "bg-insta-blue"} hover:bg-blue-700 mt-4 py-6 rounded-full transtion-all duration-150 hover:cursor-pointer text-white`} disabled={mutation.isPending}>
-                  {mutation.isPending ? <Loading width='w-5' border='border-2 border-white'/> : "Submit"}
+                  {mutation.isPending ? <Spinner width='w-5' border='border-2 border-white'/> : "Submit"}
               </Button>
             </form>
           </Form>

@@ -9,7 +9,7 @@ import { verifyEmail } from '@/services/authService'
 import { useQuery } from '@tanstack/react-query'
 import { verifyEmailKey } from '@/cache_keys/auth_key'
 import { useNavigate, useParams } from 'react-router-dom'
-import Loading from '@/components/Loading'
+import Spinner from '@/components/Spinner'
 
 export default function VerifyEmailSuccess() {
   const param = useParams();
@@ -36,7 +36,7 @@ export default function VerifyEmailSuccess() {
           <CardTitle>Xác thực email</CardTitle>
         </CardHeader>
         <CardContent className='flex flex-col items-center gap-4'>
-          {isFetching ? (<><p>Đang xác thực email. Vui lòng đợi một chút</p><Loading width='w-5' border="border-2 border-insta-blue" /></>) : <p className='text-green-600'>Email đã xác thực thành công. Đang chuyển tới trang đăng nhập</p>}
+          {isFetching ? (<><p>Đang xác thực email. Vui lòng đợi một chút</p><Spinner width='w-5' border="border-2 border-insta-blue" /></>) : <p className='text-green-600'>Email đã xác thực thành công. Đang chuyển tới trang đăng nhập</p>}
         </CardContent>
       </Card>
     </div>

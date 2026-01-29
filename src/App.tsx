@@ -11,7 +11,8 @@ import Home from './pages/Home'
 import Explore from './pages/Explore'
 import Message from './pages/Message'
 import Reels from './pages/Reels'
-import Profile from './pages/Profile'
+import UserProfile from './pages/UserProfile'
+import EditProfile from './pages/EditProfile'
 
 export default function App() {
   return (
@@ -27,7 +28,8 @@ export default function App() {
         <Route path="/explore" element={<Explore />}/>
         <Route path="/message" element={<Message />}/>
         <Route path='/reels' element={<Reels />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/user/:id" element={<UserProfile />} />
+        <Route path="/edit-profile" element={<EditProfile />}/>
       </Route>
     </Routes>
   )
