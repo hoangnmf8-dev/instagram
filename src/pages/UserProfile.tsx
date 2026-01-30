@@ -43,8 +43,9 @@ export default function UserProfile() {
   })
 
   useEffect(() => {
-    if(!profileData || profileData.data._id !== userData.data._id) return;
-    setUser(userData.data)
+    if(userData && profileData?.data?._id === userData?.data?._id) {
+      setUser(userData.data)
+    }
   }, [userData]) //dữ liệu chưa kịp đổ về nên lấy từ cache, sau đó dữ liệu về thì k chạy lại do dependency là mảng rỗng, do vậy phải có dependency
 
   return (
@@ -60,16 +61,16 @@ export default function UserProfile() {
                   alt="@shadcn"
                   className="w-full h-full object-cover"
                 />
-                <AvatarFallback className='text-5xl'>{user.username.slice(0,1)}</AvatarFallback>
+                <AvatarFallback className='text-5xl'>{userData?.data?.username?.slice(0,1)}</AvatarFallback>
               </Avatar>
             </div>
             <div className='flex flex-col justify-center gap-2'>
-              <h1 className='font-bold text-[24px]'>{user?.username}</h1>
-              <h2 className="text-[14px] text-gray-400">{user?.fullName}</h2>
+              <h1 className='font-bold text-[24px]'>{userData?.data?.username}</h1>
+              <h2 className="text-[14px] text-gray-400">{userData?.data?.fullName}</h2>
               <div className='flex gap-10'>
-                <p><strong className='font-semibold text-[14px]'>{user?.postsCount || 0}</strong> posts</p>
-                <p><strong className='font-semibold text-[14px]'>{user?.followersCount}</strong> followers</p>
-                <p><strong className='font-semibold text-[14px]'>{user?.followingCount}</strong> following</p>
+                <p><strong className='font-semibold text-[14px]'>{userData?.data?.postsCount || 0}</strong> posts</p>
+                <p><strong className='font-semibold text-[14px]'>{userData?.data?.followersCount}</strong> followers</p>
+                <p><strong className='font-semibold text-[14px]'>{userData?.data?.followingCount}</strong> following</p>
               </div>
             </div>
           </div>
@@ -80,10 +81,10 @@ export default function UserProfile() {
                 <Button className='basis-1/2 bg-[#f0f2f5] text-black py-6 hover:bg-gray-300 hover:cursor-pointer'>View archive</Button>
               </>)
               : 
-              (<>
-                <Button>Follow</Button>
-                <Button>Message</Button>
-              </>)
+              (<div className='flex gap-4 w-full px-4 mt-6'>
+                <Button className='basis-1/2 bg-insta-blue hover:bg-blue-500 hover:cursor-pointer'>Follow</Button>
+                <Button className='basis-1/2 bg-insta-blue hover:bg-blue-500 hover:cursor-pointer'>Message</Button>
+              </div>)
             }
           </div>
         </div>

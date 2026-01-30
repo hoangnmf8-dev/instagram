@@ -1,13 +1,25 @@
 import axios from "axios"
 import {useAuth} from "../stores/authStore"
-import { useNavigate } from "react-router-dom";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 let resfreshPromise = null;
 
-export const handleLogout = () => {
-  useAuth.getState().setUser(null);
-  useAuth.getState().setToken(null);
-  window.location.href = "/login";
+export const handleLogout = async () => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/auth/logout`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${useAuth.getState().token?.accessToken}`,
+        "Content-Type": "application/json"
+      }
+    });
+    if(!response.ok) throw new Error("An error has occured");
+    useAuth.getState().setUser(null);
+    useAuth.getState().setToken(null);
+    window.location.href = "/login";
+    return response.data;
+  } catch(error) {
+    return Promise.reject(error);
+  }
 }
 
 const getNewToken = async () => {

@@ -40,22 +40,32 @@ import Footer from '@/components/Footer'
 import Spinner from '@/components/Spinner';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { changePassword } from '@/services/userServices';
-import { searchUser } from '@/services/searchService';
+import { 
+  searchUser, 
+  type searchHitoryPayload, 
+  searchHitory, 
+  getSearchHistory, 
+  deleteItemHistory,
+  deleteAllHistory
+} from '@/services/searchService';
 import { ChangePasswordValues, changePasswordSchema } from '@/schemas/editProfileSchema';
-import { useMutation, useQueries, useQuery } from '@tanstack/react-query';
+import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast, Toaster } from 'sonner';
 import useDebounce from '@/hooks/useDebounce';
-import { searchUserKey } from '@/cache_keys/searchKey';
+import { searchUserKey, getSearchHistoryKey } from '@/cache_keys/searchKey';
 import { X } from 'lucide-react';
 import Loading from './Loading';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export default function Sidebar() {
+  const query = useQueryClient();
   const { user } = useAuth();
   const [value, setValue] = useState<string>("");
+  const [openSearch, setOpenSearch] = useState<boolean>(false);
   const [openChangePassword, setOpenChangePassword] = useState(false);
   const debounceValue = useDebounce<string>(value, 500);
+  const navigate = useNavigate();
 
   const navList = [
     {
@@ -116,6 +126,76 @@ export default function Sidebar() {
     enabled: !!debounceValue
   })
 
+  const mutationClickUser = useMutation({
+    mutationFn: (payload: searchHitoryPayload) => searchHitory(payload),
+    onSuccess: ({data}) => {
+      const id = data.searchedUserId;
+      navigate(`/user/${id}`);
+      setOpenSearch(false);
+      setValue("");
+      query.invalidateQueries({queryKey: getSearchHistoryKey});
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    }
+  })
+
+  const handlePostSearch = (e: React.MouseEvent<HTMLDivElement>) => {
+    const id = e.currentTarget.dataset.id;
+    if(typeof id === "string" && typeof debounceValue === "string" && debounceValue) {
+      mutationClickUser.mutate({
+        searchedUserId: id,
+        searchQuery: debounceValue
+      });
+      return;
+    }
+  }
+
+  const {data: searchHistory, isFetching: isFetchingSearchHistory} = useQuery({
+    queryKey: getSearchHistoryKey,
+    queryFn: getSearchHistory,
+    enabled: !!openSearch,
+    retry: 3
+  })
+
+  const handleClickUser = (e: React.MouseEvent<HTMLDivElement>) => {
+    const id = e.currentTarget.dataset.id;
+    if(typeof id === "string") {
+      navigate(`/user/${id}`);
+      setOpenSearch(false);
+      setValue("");
+    }
+  }
+
+  const mutationDeleteItemHistory = useMutation({
+    mutationFn: (id: string) => deleteItemHistory(id),
+    onSuccess: () => {
+      query.invalidateQueries({queryKey: getSearchHistoryKey});
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  })
+
+  const handleDeleteItemHistory = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    const id = e.currentTarget.dataset.deleteId;
+    mutationDeleteItemHistory.mutate(id);
+  }
+
+  const mutationDeleteAllHistory = useMutation({
+    mutationFn: deleteAllHistory,
+    onSuccess: () => {
+      query.invalidateQueries({queryKey: getSearchHistoryKey});
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  })
+
+  const handleDeleteAllHistory = () => {
+    mutationDeleteAllHistory.mutate();
+  }
   return (
     <aside className="w-64 border-r h-screen p-4">
       <nav className='flex flex-col justify-between py-4 h-full'>
@@ -140,7 +220,7 @@ export default function Sidebar() {
             </NavLink>
           ))}
           <div className='p-3 rounded-lg transition-all hover:bg-gray-200 hover:cursor-pointer'>
-            <Sheet>
+            <Sheet open={openSearch} onOpenChange={setOpenSearch}>
               <SheetTrigger className='w-full flex items-center hover:cursor-pointer gap-4'>
                 <SearchIcon />
                 Search
@@ -153,20 +233,20 @@ export default function Sidebar() {
                       <Input className='rounded-2xl bg-gray-100 focus-visible:ring-0' value={value} onChange={(e) => setValue(e.target.value)} placeholder='Search'/>
                       <div className='flex justify-between items-center px-3 mt-4 mb-4'>
                         <h3>Recent</h3>
-                        <Button className='bg-transparent text-insta-blue p-0 hover:bg-transparent hover:cursor-pointer'>Clear all</Button>
+                        <Button className='bg-transparent text-insta-blue p-0 hover:bg-transparent hover:cursor-pointer' onClick={handleDeleteAllHistory}>Clear all</Button>
                       </div>
                       <div className='flex flex-col gap-2 items-center overflow-y-auto max-h-137'>
-                        {isFetchingSearchUser 
+                        {(isFetchingSearchUser)
                         ? 
                         <Spinner width='w-8' border='border-2 border-insta-blue' position='mt-50'/>
                         :
-                        (!searchUserData?.data?.length 
+                       (searchUserData && (!searchUserData?.data?.length 
                         ? 
                           <p className='text-center mt-50 font-semibold text-red-500'>User not found</p> 
                         : 
                          <>
                           {searchUserData?.data?.map(data => (
-                            <div className='flex w-full items-center justify-between py-3 px-4 rounded-md hover:bg-gray-100 hover:cursor-pointer'>
+                            <div key={data._id} data-id={data._id} className='flex w-full items-center justify-between py-3 px-4 rounded-md hover:bg-gray-100 hover:cursor-pointer' onClick={handlePostSearch}>
                               <div className='flex gap-2 w-full items-center'>
                                 <Avatar className='w-11 h-11 rounded-full overflow-hidden'>
                                   <AvatarImage
@@ -181,11 +261,38 @@ export default function Sidebar() {
                                   <p>{data?.fullName}</p>
                                 </div>
                               </div>
-                              <X />
                             </div>
                           ))}
                          </>
-                        )
+                        ) 
+                        ||
+                        (searchHistory && (!searchHistory?.data?.length 
+                        ? 
+                          <p className='text-center mt-50 font-semibold text-red-500'>No recent searches</p> 
+                        : 
+                         <>
+                          {searchHistory?.data?.map(data => (
+                            <div key={data.searchedUserId._id} data-id={data.searchedUserId._id} className='flex w-full items-center justify-between py-3 px-4 rounded-md hover:bg-gray-100 hover:cursor-pointer' onClick={handleClickUser}>
+                              <div className='flex gap-2 w-full items-center'>
+                                <Avatar className='w-11 h-11 rounded-full overflow-hidden'>
+                                  <AvatarImage
+                                    src={data?.searchedUserId.profilePicture ? `${BASE_URL}${data?.searchedUserId?.profilePicture}` : "/common_img/meme-hai-1.jpg"}
+                                    alt="@shadcn"
+                                    className="object-cover w-full h-full"
+                                  />
+                                  <AvatarFallback>{data?.searchedUserId?.username?.slice(0,1)}</AvatarFallback>
+                                </Avatar>
+                                <div className='flex flex-col justify-center'>
+                                  <h4 className='text-black font-semibold'>{data?.searchedUserId?.username}</h4>
+                                  <p>{data?.searchedUserId?.fullName}</p>
+                                </div>
+                              </div>
+                              <div data-delete-id={data._id} onClick={handleDeleteItemHistory}><X /></div>
+                            </div>
+                          ))}
+                         </>
+                        ) )
+                      )
                       }
                       </div>
                     </div>
