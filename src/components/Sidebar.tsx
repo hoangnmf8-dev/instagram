@@ -197,7 +197,7 @@ export default function Sidebar() {
     mutationDeleteAllHistory.mutate();
   }
   return (
-    <aside className="w-64 border-r h-screen p-4">
+    <aside className="fixed top-0 bottom-0 left-0 w-64 border-r h-screen p-4 shadow-lg z-40">
       <nav className='flex flex-col justify-between py-4 h-full'>
         <Link to="/" className='pl-3'><InstagramIcon /></Link>
         <div className='flex-1 flex justify-center gap-4 flex-col'>
@@ -206,7 +206,7 @@ export default function Sidebar() {
               key={item.id} 
               to={item.to} 
               className={({ isActive }) => 
-                `flex items-center gap-4 p-3 rounded-lg transition-all ${isActive ? "bg-gray-300" : "hover:bg-gray-200"}`
+                `w-full flex items-center gap-4 p-3 rounded-lg transition-all ${isActive ? "bg-gray-300" : "hover:bg-gray-200"}`
               }
             >
               {({ isActive }) => (

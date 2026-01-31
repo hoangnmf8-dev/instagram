@@ -1,0 +1,1 @@
+export const getPostsNewfeedKey = ["post", "newfeed"];

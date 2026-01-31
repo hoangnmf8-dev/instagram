@@ -55,3 +55,13 @@ export const deleteProfilePicture = async () => {
     throw new Error(errorMessage);
   }
 }
+
+export const getSuggestedUser = async () => {
+  try {
+    const response = await httpRequest.get("/api/users/suggested?limit=5");
+    return response.data;
+  } catch(error) {
+    const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+    throw new Error(errorMessage);
+  }
+}
