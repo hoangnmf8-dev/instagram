@@ -14,16 +14,17 @@ type Props = {
   userData: any,
   caption: string,
   postId: string,
-  setOpenPostDetail: (value: boolean) => void
+  setOpenPostDetail: (value: boolean) => void,
+  page: string
 }
-export default function PostAction({comments, likes, isLiked, isSaved, likedBy, savedBy, userData, caption, postId, setOpenPostDetail}: Props) {
+export default function PostAction({comments, likes, isLiked, isSaved, likedBy, savedBy, userData, caption, postId, setOpenPostDetail, page}: Props) {
   const query = useQueryClient();
   const mutationLikePost = useMutation({
   mutationFn: (id) => likePost(id),
   onMutate: async (postId) => {
-    await query.cancelQueries({ queryKey: getPostsNewfeedKey });
-    const previousPosts = query.getQueryData(getPostsNewfeedKey);
-    query.setQueryData(getPostsNewfeedKey, (old: any) => ({
+    await query.cancelQueries({ queryKey: getPostsNewfeedKey(page) });
+    const previousPosts = query.getQueryData(getPostsNewfeedKey(page));
+    query.setQueryData(getPostsNewfeedKey(page), (old: any) => ({
       ...old,
       pages: old.pages.map((page: any) => ({
         ...page,
@@ -38,18 +39,18 @@ export default function PostAction({comments, likes, isLiked, isSaved, likedBy, 
     return { previousPosts };
   },
   onError: (err, newTodo, context) => {
-    query.setQueryData(getPostsNewfeedKey, context?.previousPosts);
+    query.setQueryData(getPostsNewfeedKey(page), context?.previousPosts);
   },
   onSettled: () => {
-    query.invalidateQueries({ queryKey: getPostsNewfeedKey });
+    query.invalidateQueries({ queryKey: getPostsNewfeedKey(page) });
   },
   });
   const mutationUnLikePost = useMutation({
     mutationFn: (id) => unLikePost(id),
     onMutate: async (postId) => {
-    await query.cancelQueries({ queryKey: getPostsNewfeedKey });
-    const previousPosts = query.getQueryData(getPostsNewfeedKey);
-    query.setQueryData(getPostsNewfeedKey, (old: any) => ({
+    await query.cancelQueries({ queryKey: getPostsNewfeedKey(page) });
+    const previousPosts = query.getQueryData(getPostsNewfeedKey(page));
+    query.setQueryData(getPostsNewfeedKey(page), (old: any) => ({
       ...old,
       pages: old.pages.map((page: any) => ({
         ...page,
@@ -64,18 +65,18 @@ export default function PostAction({comments, likes, isLiked, isSaved, likedBy, 
     return { previousPosts };
   },
   onError: (err, newTodo, context) => {
-    query.setQueryData(getPostsNewfeedKey, context?.previousPosts);
+    query.setQueryData(getPostsNewfeedKey(page), context?.previousPosts);
   },
   onSettled: () => {
-    query.invalidateQueries({ queryKey: getPostsNewfeedKey });
+    query.invalidateQueries({ queryKey: getPostsNewfeedKey(page) });
   },
   });
   const mutationSavePost = useMutation({
     mutationFn: (id) => savePost(id),
     onMutate: async (postId) => {
-    await query.cancelQueries({ queryKey: getPostsNewfeedKey });
-    const previousPosts = query.getQueryData(getPostsNewfeedKey);
-    query.setQueryData(getPostsNewfeedKey, (old: any) => ({
+    await query.cancelQueries({ queryKey: getPostsNewfeedKey(page) });
+    const previousPosts = query.getQueryData(getPostsNewfeedKey(page));
+    query.setQueryData(getPostsNewfeedKey(page), (old: any) => ({
       ...old,
       pages: old.pages.map((page: any) => ({
         ...page,
@@ -90,18 +91,18 @@ export default function PostAction({comments, likes, isLiked, isSaved, likedBy, 
     return { previousPosts };
   },
   onError: (err, newTodo, context) => {
-    query.setQueryData(getPostsNewfeedKey, context?.previousPosts);
+    query.setQueryData(getPostsNewfeedKey(page), context?.previousPosts);
   },
   onSettled: () => {
-    query.invalidateQueries({ queryKey: getPostsNewfeedKey });
+    query.invalidateQueries({ queryKey: getPostsNewfeedKey(page) });
   },
   });
   const mutationUnSavePost = useMutation({
     mutationFn: (id) => unSavePost(id),
     onMutate: async (postId) => {
-    await query.cancelQueries({ queryKey: getPostsNewfeedKey });
-    const previousPosts = query.getQueryData(getPostsNewfeedKey);
-    query.setQueryData(getPostsNewfeedKey, (old: any) => ({
+    await query.cancelQueries({ queryKey: getPostsNewfeedKey(page) });
+    const previousPosts = query.getQueryData(getPostsNewfeedKey(page));
+    query.setQueryData(getPostsNewfeedKey(page), (old: any) => ({
       ...old,
       pages: old.pages.map((page: any) => ({
         ...page,
@@ -116,10 +117,10 @@ export default function PostAction({comments, likes, isLiked, isSaved, likedBy, 
     return { previousPosts };
   },
   onError: (err, newTodo, context) => {
-    query.setQueryData(getPostsNewfeedKey, context?.previousPosts);
+    query.setQueryData(getPostsNewfeedKey(page), context?.previousPosts);
   },
   onSettled: () => {
-    query.invalidateQueries({ queryKey: getPostsNewfeedKey });
+    query.invalidateQueries({ queryKey: getPostsNewfeedKey(page) });
   },
   });
   const handleLikePost = () => {

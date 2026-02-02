@@ -1,6 +1,6 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import { NavLink, useNavigate, Link } from 'react-router-dom';
-import { HomeIcon, InstagramIcon, MessageIcon, SearchIcon, ExploreIcon, NotifyIcon, CreateIcon, MoreIcon, ReelIcon, } from './InstagramIcon';
+import { HomeIcon, InstagramIcon, MessageIcon, SearchIcon, ExploreIcon, NotifyIcon, CreateIcon, MoreIcon, ReelIcon, CreatePostImgIcon, } from './InstagramIcon';
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -55,6 +55,10 @@ import useDebounce from '@/hooks/useDebounce';
 import { searchUserKey, getSearchHistoryKey } from '@/cache_keys/searchKey';
 import { X } from 'lucide-react';
 import Loading from './Loading';
+import { FormControl, FormField, FormItem, FormMessage, FormLabel } from "@/components/ui/form"
+import { createPostSchema, CreatePostValues } from '@/schemas/createPostSchema';
+import { createPost } from '@/services/postService';
+import { getPostsNewfeedKey } from '@/cache_keys/postsKey';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
@@ -63,7 +67,8 @@ export default function Sidebar() {
   const { user } = useAuth();
   const [value, setValue] = useState<string>("");
   const [openSearch, setOpenSearch] = useState<boolean>(false);
-  const [openChangePassword, setOpenChangePassword] = useState(false);
+  const [openChangePassword, setOpenChangePassword] = useState<boolean>(false);
+  const [previewCreateFile, setPreviewCreateFile] = useState<string>("");
   const debounceValue = useDebounce<string>(value, 500);
   const navigate = useNavigate();
 
@@ -196,8 +201,54 @@ export default function Sidebar() {
   const handleDeleteAllHistory = () => {
     mutationDeleteAllHistory.mutate();
   }
+
+
+  const [openCreatePost, setOpenCreatePost] = useState(false);
+
+  const formCreatePost = useForm<CreatePostValues>({
+    resolver: zodResolver(createPostSchema),
+    defaultValues: {
+      file: undefined,
+      caption: ""
+    },
+    mode: "onChange"
+  })
+
+
+  const mutationCreatePost = useMutation({
+    mutationFn: (data) => createPost(data),
+    onSuccess: () => {
+      query.invalidateQueries({queryKey: getPostsNewfeedKey("newfeed")});
+      query.invalidateQueries({queryKey: getPostsNewfeedKey("explore")});
+      toast.success("Create post successfully");
+      handleCloseCreatePost();
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    }
+  })
+  const handleCreatePost = (data) => {
+    const formData = new FormData();
+    if(data.caption) formData.append("caption", data.caption);
+    
+    if(data.file) formData.append("file", data.file[0]);
+    mutationCreatePost.mutate(formData);
+  }
+
+  const handleCloseCreatePost = () => {
+    formCreatePost.setValue("caption", "");
+    setPreviewCreateFile("");
+    setOpenCreatePost(false);
+  }
+
+  useEffect(() => {
+    return () => {
+      URL.revokeObjectURL(previewCreateFile);
+    }
+  }, [previewCreateFile]);
+  
   return (
-    <aside className="fixed top-0 bottom-0 left-0 w-64 border-r h-screen p-4 shadow-lg z-40">
+    <aside className="fixed top-0 bottom-0 left-0 w-64 border-r h-screen p-4 shadow-lg z-40 bg-white">
       <nav className='flex flex-col justify-between py-4 h-full'>
         <Link to="/" className='pl-3'><InstagramIcon /></Link>
         <div className='flex-1 flex justify-center gap-4 flex-col'>
@@ -306,8 +357,69 @@ export default function Sidebar() {
             <span>Notifications</span>
           </div>
           <div className='flex items-center gap-4 p-3 rounded-lg transition-all hover:bg-gray-200 hover:cursor-pointer'>
-            <CreateIcon />
-            <span>Create</span>
+            <div className='flex items-center gap-4' onClick={() => setOpenCreatePost(true)}>
+              <CreateIcon />
+              <span>Create</span>
+            </div>
+            <Dialog open={openCreatePost} onOpenChange={handleCloseCreatePost}>
+              <DialogContent className='sm:max-w-200 p-0 max-h-153 flex flex-col gap-0'>
+                <DialogHeader className='sr-only'>
+                  <DialogTitle>Create Post</DialogTitle>
+                  <DialogDescription>
+                  </DialogDescription>
+                </DialogHeader>
+                  <div className='text-center font-semibold p-4'>Create new post</div>
+                  <hr />
+                  <div className='flex-1'>
+                    <Form {...formCreatePost}>
+                      <form onSubmit={formCreatePost.handleSubmit(handleCreatePost)} className='w-full flex'>
+                        <FormField
+                          control={formCreatePost.control}
+                          name="file"
+                          render={({ field }) => (
+                            <FormItem className='basis-3/5 flex flex-col items-center border-r p-4'>
+                              <div>
+                                {previewCreateFile ? 
+                                  <img src={`${previewCreateFile}`} alt="image_create" />
+                                  :
+                                  <CreatePostImgIcon />
+                                }
+                              </div>
+                              <FormLabel htmlFor="picture" className='bg-[#4a5df9] text-white px-3 py-2 rounded-lg justify-center hover:cursor-pointer hover:bg-[#4a5ddf]'>Select form computer</FormLabel>
+                              <FormControl>
+                                <Input id="picture" type="file" className='hidden' accept='image/*' onChange={(e) => {
+                                    const files = e.target.files;
+                                    if (files && files.length > 0) {
+                                      setPreviewCreateFile(URL.createObjectURL(files[0]));
+                                      field.onChange(files); //Chỉ truyền FileList vào để phù hợp với schema  
+                                    }
+                                  }}
+                                  onBlur={field.onBlur}
+                                  name={field.name}
+                                  ref={field.ref}
+                                />
+                              </FormControl>
+                              <FormMessage/>
+                            </FormItem>
+                          )}    
+                        />
+
+                        <FormField
+                          control={formCreatePost.control}
+                          name="caption"
+                          render={({field}) => (
+                            <FormItem className='basis-2/5 p-4'>
+
+                              <textarea {...field} className='border p-2' rows={5} placeholder='Enter your caption...'></textarea>
+                              <Button type='submit' className={`${formCreatePost.formState.isValid ? "bg-insta-blue" : "bg-blue-300"} hover:bg-blue-300 hover:cursor-pointer`}>Create</Button>
+                            </FormItem>
+                          )}
+                        />
+                      </form>
+                    </Form>
+                  </div>
+              </DialogContent>
+            </Dialog>
           </div>
           <NavLink to={`/user/${user?._id}`} className={({ isActive }) => `flex items-center gap-4 p-3 rounded-lg transition-all ${isActive ? "font-bold bg-gray-300" : "hover:bg-gray-200"}`
               }>

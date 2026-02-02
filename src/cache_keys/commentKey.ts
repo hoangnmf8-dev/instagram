@@ -1,2 +1,2 @@
-export const getPostCommentKey = (postId: string) => ["post", "comment", postId];
-export const getRepliesCommentKey = (postId: string, commentId: string) => ["post", "comment", postId, commentId];
+export const getPostCommentKey = (postId: string, page: string) => ["post",  "comment", page, postId];
+export const getRepliesCommentKey = (postId: string, commentId: string, page: string) => ["post", "comment", page, postId, commentId];

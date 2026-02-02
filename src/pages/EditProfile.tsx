@@ -72,7 +72,6 @@ export default function EditProfile() {
   const mutationDeletePicture = useMutation({
     mutationFn: deleteProfilePicture,
     onSuccess: (data) => {
-      console.log("🚀 ~ EditProfile ~ data:", data)
       toast.success("Delete photo successfully");
       queryClient.invalidateQueries({queryKey: userProfileKey(user?._id)});
       setPreview(data.data?.profilePicture ? `${BASE_URL}${data.data?.profilePicture}` : "/common_img/meme-hai-1.jpg");

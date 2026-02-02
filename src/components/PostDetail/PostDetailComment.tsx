@@ -41,8 +41,7 @@ import { useForm } from 'react-hook-form'
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-export default function PostDetailComment({comment, postId, setIsReply, setValue, setFocus, setCommentId}) {
-  console.log("🚀 ~ PostDetailComment ~ comment:", comment)
+export default function PostDetailComment({comment, postId, setIsReply, setValue, setFocus, setCommentId, page}) {
   const query = useQueryClient();
   const [openEditComment, setOpenEditComment] = useState(false);
   const {user} = useAuth();
@@ -67,10 +66,10 @@ export default function PostDetailComment({comment, postId, setIsReply, setValue
   const mutataionLikeComment = useMutation({
     mutationFn: () => likeComment(postId, comment._id),
     onMutate: async () => {
-      await query.cancelQueries({queryKey: getPostCommentKey(postId)});
-      const previousData = query.getQueryData(getPostCommentKey(postId));
+      await query.cancelQueries({queryKey: getPostCommentKey(postId, page)});
+      const previousData = query.getQueryData(getPostCommentKey(postId, page));
 
-      query.setQueryData(getPostCommentKey(postId), (old: any) => ({
+      query.setQueryData(getPostCommentKey(postId, page), (old: any) => ({
         ...old,
         data: {
           ...old.data,
@@ -90,10 +89,10 @@ export default function PostDetailComment({comment, postId, setIsReply, setValue
       return {previousData};
     },
      onError: (err, newTodo, context) => {
-      query.setQueryData(getPostCommentKey(postId), context?.previousData);
+      query.setQueryData(getPostCommentKey(postId, page), context?.previousData);
     },
     onSettled: () => {
-      query.invalidateQueries({ queryKey: getPostCommentKey(postId) });
+      query.invalidateQueries({ queryKey: getPostCommentKey(postId, page) });
     },
   });
 
@@ -104,10 +103,10 @@ export default function PostDetailComment({comment, postId, setIsReply, setValue
   const mutataionUnLikeComment = useMutation({
     mutationFn: () => unLikeComment(postId, comment._id),
     onMutate: async () => {
-      await query.cancelQueries({queryKey: getPostCommentKey(postId)});
-      const previousData = query.getQueryData(getPostCommentKey(postId));
+      await query.cancelQueries({queryKey: getPostCommentKey(postId, page)});
+      const previousData = query.getQueryData(getPostCommentKey(postId, page));
 
-      query.setQueryData(getPostCommentKey(postId), (old: any) => ({
+      query.setQueryData(getPostCommentKey(postId, page), (old: any) => ({
         ...old,
         data: {
           ...old.data,
@@ -127,10 +126,10 @@ export default function PostDetailComment({comment, postId, setIsReply, setValue
       return {previousData};
     },
      onError: (err, newTodo, context) => {
-      query.setQueryData(getPostCommentKey(postId), context?.previousData);
+      query.setQueryData(getPostCommentKey(postId, page), context?.previousData);
     },
     onSettled: () => {
-      query.invalidateQueries({ queryKey: getPostCommentKey(postId) });
+      query.invalidateQueries({ queryKey: getPostCommentKey(postId, page) });
     },
   });
 
@@ -141,8 +140,8 @@ export default function PostDetailComment({comment, postId, setIsReply, setValue
   const mutationDeleteComment = useMutation({
     mutationFn: () => deleteComment(postId, comment._id),
     onSuccess: () => {
-      query.invalidateQueries({queryKey: getPostCommentKey(postId)});
-      query.invalidateQueries({queryKey: getPostsNewfeedKey})
+      query.invalidateQueries({queryKey: getPostCommentKey(postId, page)});
+      query.invalidateQueries({queryKey: getPostsNewfeedKey(page)})
     },
     onError: (error) => {
       toast.error(error.message);
@@ -154,7 +153,7 @@ export default function PostDetailComment({comment, postId, setIsReply, setValue
   }
 
   const {data: repliesData, isFetching: isFetchingReplies, refetch: refetchReplies} = useQuery({
-    queryKey: getRepliesCommentKey(postId, comment._id),
+    queryKey: getRepliesCommentKey(postId, comment._id, page),
     queryFn: () => getRepliesComment(postId, comment._id),
     retry: 3,
     enabled: false
@@ -168,7 +167,7 @@ export default function PostDetailComment({comment, postId, setIsReply, setValue
   const mutationEditComment = useMutation({
     mutationFn: (data) => editComment(postId, comment._id, data),
     onSuccess: () => {
-      query.invalidateQueries({queryKey: getPostCommentKey(postId)});
+      query.invalidateQueries({queryKey: getPostCommentKey(postId, page)});
     }
   })
   const onSubmitEditComment = (data) => {
@@ -185,7 +184,7 @@ export default function PostDetailComment({comment, postId, setIsReply, setValue
     const input = document.querySelector('input[name="content"]');
     if (input instanceof HTMLInputElement) {
       const length = input.value.length;
-      input.setSelectionRange(0, length); //bôi đen vị trí
+      input.setSelectionRange(length, length); //bôi đen vị trí
     }
   }, 0);
   }

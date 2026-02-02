@@ -34,7 +34,7 @@ export default function Home() {
   }
 
   const {data: postsNewfeedData, fetchNextPage, hasNextPage, isFetchingNextPage} = useInfiniteQuery({
-    queryKey: getPostsNewfeedKey,
+    queryKey: getPostsNewfeedKey("newfeed"),
     queryFn: getPostsNewfeed, // nhận 1 đối số có dạng obj chứa key pageParam và value từ getNextPageParam trả về
     getNextPageParam: (lastPage) => { //lastPage chính là response.data được trả về từ hàm gọi api ở service
       const {hasMore, offset, posts} = lastPage.data;
@@ -53,7 +53,7 @@ export default function Home() {
                   {
                     postsNewfeedData?.pages ?
                       postsNewfeedData?.pages?.map((page, index) => <React.Fragment key={index}>
-                        {page?.data?.posts.map((post: any) => post?.userId && <PostItem key={post?._id} post={post}/>)}
+                        {page?.data?.posts.map((post: any) => post?.userId && <PostItem key={post?._id} post={post} page="newfeed"/>)}
                       </React.Fragment>) 
                     :
                       ( 
