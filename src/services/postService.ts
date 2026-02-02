@@ -51,3 +51,14 @@ export const unSavePost = async (id: string) => {
     throw new Error(errorMessage);
   }
 }
+
+export const getPostNewsFeedDetail = async (id: string) => {
+  try {
+    const response = await httpRequest.get(`/api/posts/${id}`);
+    return response.data;
+  } catch(error) {
+    const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+    throw new Error(errorMessage);
+  }
+}
+

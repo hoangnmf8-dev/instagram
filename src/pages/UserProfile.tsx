@@ -41,6 +41,7 @@ export default function UserProfile() {
     staleTime: 100 * 1000,
     retry: 3
   })
+  console.log("🚀 ~ UserProfile ~ userData:", userData)
 
   useEffect(() => {
     if(userData && profileData?.data?._id === userData?.data?._id) {

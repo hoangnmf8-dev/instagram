@@ -13,9 +13,10 @@ type Props = {
   savedBy: string[],
   userData: any,
   caption: string,
-  postId: string
+  postId: string,
+  setOpenPostDetail: (value: boolean) => void
 }
-export default function PostAction({comments, likes, isLiked, isSaved, likedBy, savedBy, userData, caption, postId}: Props) {
+export default function PostAction({comments, likes, isLiked, isSaved, likedBy, savedBy, userData, caption, postId, setOpenPostDetail}: Props) {
   const query = useQueryClient();
   const mutationLikePost = useMutation({
   mutationFn: (id) => likePost(id),
@@ -142,7 +143,7 @@ export default function PostAction({comments, likes, isLiked, isSaved, likedBy, 
             <span>{likes}</span>
           </div>
           <div className='flex items-center gap-2 hover:cursor-pointer'>
-            <CommentIcon />
+            <div onClick={() => setOpenPostDetail(true)}><CommentIcon /></div>
             <span>{comments}</span>
           </div>
         </div>

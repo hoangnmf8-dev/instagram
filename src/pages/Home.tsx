@@ -57,7 +57,7 @@ export default function Home() {
                       </React.Fragment>) 
                     :
                       ( 
-                        Array(10).fill(0).map(item => <Card className="w-130 mt-9 pt-4">
+                        Array(10).fill(0).map((_, index) => <Card key={index} className="w-130 mt-9 pt-4">
                           <CardHeader>
                             <Skeleton className="h-4 w-2/3" />
                             <Skeleton className="h-4 w-1/2" />

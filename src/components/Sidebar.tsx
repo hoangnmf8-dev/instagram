@@ -333,9 +333,9 @@ export default function Sidebar() {
                 sideOffset={20}
             >
               <DropdownMenuGroup>
-                <DropdownMenuItem className='hover:cursor-pointer px-3 py-2 text-md'>Xem bài viết đã lưu</DropdownMenuItem>
-                <DropdownMenuItem className='hover:cursor-pointer px-3 py-2 text-md' onClick={() => setOpenChangePassword(true)}>Đổi mật khẩu</DropdownMenuItem>
-                <DropdownMenuItem className='hover:cursor-pointer px-3 py-2 text-md text-red-500' onClick={handleLogout}>Đăng xuất</DropdownMenuItem>
+                <DropdownMenuItem className='hover:cursor-pointer px-3 py-2 text-md'>View saved posts</DropdownMenuItem>
+                <DropdownMenuItem className='hover:cursor-pointer px-3 py-2 text-md' onClick={() => setOpenChangePassword(true)}>Change password</DropdownMenuItem>
+                <DropdownMenuItem className='hover:cursor-pointer px-3 py-2 text-md text-red-500' onClick={handleLogout}>Log out</DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
