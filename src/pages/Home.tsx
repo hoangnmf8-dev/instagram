@@ -1,7 +1,7 @@
 import React from 'react'
 import { getSuggestedUser } from '@/services/userServices'
 import { getSuggestedUserKey } from '@/cache_keys/searchKey'
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from '@/stores/authStore'
@@ -13,9 +13,12 @@ import LoadMoreTrigger from '@/components/LoadMoreTrigger'
 import Spinner from '@/components/Spinner'
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { followUser } from '@/services/followService'
+import { userProfileKey } from '@/cache_keys/userKey'
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 export default function Home() {
+  const query = useQueryClient();
   const {user} = useAuth();
   const navigate = useNavigate();
 
@@ -43,6 +46,17 @@ export default function Home() {
     }
   })
   
+  const mutationFollowUser = useMutation({
+    mutationFn: (id) => followUser(id),
+    onSuccess: (data, id) => {
+      query.invalidateQueries({queryKey: getSuggestedUserKey});
+      query.invalidateQueries({queryKey: userProfileKey(id)})
+    }
+  });
+
+  const handleFollowUser = (id) => {
+    mutationFollowUser.mutate(id)
+  }
   return (
     <div>
       <div className='max-w-5xl mx-auto'>
@@ -114,7 +128,7 @@ export default function Home() {
                       <p className='text-[11px] text-gray-500 font-300'>Suggested for you</p>
                     </div>
                   </div>
-                  <Button className='bg-transparent text-insta-blue hover:cursor-pointer hover:text-blue-400 hover:bg-transparent'>Follow</Button>
+                  <Button className='bg-transparent text-insta-blue hover:cursor-pointer hover:text-blue-400 hover:bg-transparent' onClick={() => handleFollowUser(suggestedUser._id)}>Follow</Button>
                 </div>)
               }
               <p className='text-[12px] text-gray-500 font-300 mt-4 uppercase'>© 2026 Instagram from Meta</p>

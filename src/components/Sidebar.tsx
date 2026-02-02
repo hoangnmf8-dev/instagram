@@ -39,7 +39,7 @@ import { FloatingInput } from '@/components/FloatingInput'
 import Footer from '@/components/Footer'
 import Spinner from '@/components/Spinner';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { changePassword } from '@/services/userServices';
+import { changePassword, getProfile } from '@/services/userServices';
 import { 
   searchUser, 
   type searchHitoryPayload, 
@@ -58,7 +58,8 @@ import Loading from './Loading';
 import { FormControl, FormField, FormItem, FormMessage, FormLabel } from "@/components/ui/form"
 import { createPostSchema, CreatePostValues } from '@/schemas/createPostSchema';
 import { createPost } from '@/services/postService';
-import { getPostsNewfeedKey } from '@/cache_keys/postsKey';
+import { getPostsNewfeedKey, getUserPostKey } from '@/cache_keys/postsKey';
+import { profileKey, userProfileKey } from '@/cache_keys/userKey';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
@@ -220,6 +221,8 @@ export default function Sidebar() {
     onSuccess: () => {
       query.invalidateQueries({queryKey: getPostsNewfeedKey("newfeed")});
       query.invalidateQueries({queryKey: getPostsNewfeedKey("explore")});
+      query.invalidateQueries({queryKey: profileKey});
+      query.invalidateQueries({queryKey: getUserPostKey(user?._id)});
       toast.success("Create post successfully");
       handleCloseCreatePost();
     },

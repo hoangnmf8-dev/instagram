@@ -102,3 +102,23 @@ export const deletePost = async (postId: string) => {
   }
 }
 
+export const getUserPostStats = async (userId: string) => {
+  try {
+    const response = await httpRequest.get(`/api/posts/user/${userId}/stats`);
+    return response.data;
+  } catch(error) {
+    const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+    throw new Error(errorMessage);
+  }
+}
+
+export const getUserPost = async ({userId, pageParam}) => {
+  try {
+    const response = await httpRequest.get(`/api/posts/user/${userId}?limit=20&offset=${pageParam}`);
+    return response.data;
+  } catch(error) {
+    const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+    throw new Error(errorMessage);
+  }
+}
+
