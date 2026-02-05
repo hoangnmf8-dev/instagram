@@ -138,7 +138,7 @@ export default function PostContent({caption, createdAt, image, mediaType, userI
                     </DialogDescription>
                   </DialogHeader>
                   <form action="" className='flex flex-col gap-3 mt-5' onSubmit={handleSubmit(onSubmit)}>
-                    <label htmlFor="caption">Edit caption</label>
+                    <label htmlFor="caption" className='font-semibold'>Edit caption</label>
                     <textarea className='border p-2' id="caption" rows={5} placeholder='Enter your caption...' {...register("caption")}></textarea>
                     <Button className='bg-insta-blue hover:bg-blue-300'>Save</Button>
                   </form>

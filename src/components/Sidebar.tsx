@@ -117,7 +117,7 @@ export default function Sidebar() {
   const mutation = useMutation({
     mutationFn: (payload) => changePassword(payload),
     onSuccess: () => {
-      toast.success("Thay đổi mật khẩu thành công");
+      toast.success("Password changed successfully");
       setOpenChangePassword(false);
       form.reset();
     },
@@ -482,9 +482,9 @@ export default function Sidebar() {
           }}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Đổi mật khẩu</DialogTitle>
+                <DialogTitle>Change Password</DialogTitle>
                 <DialogDescription>
-                  Mật khẩu phải chứa tối thiểu 8 kí tự, 1 chữ cái in hoa, 1 chữ cái in thường
+                  Password must be at least 8 characters long and include one uppercase and one lowercase letter
                 </DialogDescription>
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)}>

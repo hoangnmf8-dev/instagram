@@ -227,7 +227,8 @@ export default function PostDetailComment({comment, postId, setIsReply, setValue
                   </DialogHeader>
                   <DialogContent className='p-8'>
                     <form action="" className='flex flex-col gap-3' onSubmit={handleSubmit(onSubmitEditComment)}>
-                      <textarea className='border-2' rows={5} {...register("content", { required: "Bạn cần nhập gì đó!" })}placeholder='Edit your comment...'></textarea>
+                      <label htmlFor="edit-comment" className='font-semibold'>Edit comment</label>
+                      <textarea className='border-2' rows={5} {...register("content", { required: "Bạn cần nhập gì đó!" })}placeholder='Edit your comment...' id="edit-comment"></textarea>
                       <Button className={`${isValid ? "bg-insta-blue" : "bg-blue-300"}  hover:bg-blue-300 hover:cursor-pointer`} disabled={!isValid}>Save</Button>
                     </form>
                   </DialogContent>
