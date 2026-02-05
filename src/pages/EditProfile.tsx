@@ -90,7 +90,7 @@ export default function EditProfile() {
     return () => URL.revokeObjectURL(preview);
   }, [preview])
   return (
-    <div className='flex-1'>
+    <div className='relative left-20'>
       {mutation.isPending && <Loading />}
       <div className='max-w-175 mx-auto pt-9'>
         <h1 className='text-xl font-semibold py-3 mb-4'>Edit profile</h1>

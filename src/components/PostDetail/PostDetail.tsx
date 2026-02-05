@@ -91,6 +91,9 @@ export default function PostDetail({openPostDetail, setOpenPostDetail, postId, p
       query.invalidateQueries({queryKey: getPostsNewfeedKey(page)});
       query.invalidateQueries({queryKey: getPostCommentKey(postId, page)});
       query.invalidateQueries({queryKey: getRepliesCommentKey(page, postId, commentId)});
+    },
+    onError: (error) => {
+      toast.error(error.message);
     }
   })
 
@@ -123,41 +126,41 @@ export default function PostDetail({openPostDetail, setOpenPostDetail, postId, p
     mutationLikePost.mutate();
   }
 
-    const mutationUnLikePost = useMutation({
-      mutationFn: () => unLikePost(postId),
-      onSuccess: () => {
-        query.invalidateQueries({queryKey: getPostsNewfeedKey(page)});
-        query.invalidateQueries({queryKey: getPostsNewfeedDetailKey(postId, page)});
-      }
-    })
-
-    const handleUnLikePost = () => {
-      mutationUnLikePost.mutate();
+  const mutationUnLikePost = useMutation({
+    mutationFn: () => unLikePost(postId),
+    onSuccess: () => {
+      query.invalidateQueries({queryKey: getPostsNewfeedKey(page)});
+      query.invalidateQueries({queryKey: getPostsNewfeedDetailKey(postId, page)});
     }
+  })
 
-    const mutationUnSavePost = useMutation({
-      mutationFn: () => unSavePost(postId),
-      onSuccess: () => {
-        query.invalidateQueries({queryKey: getPostsNewfeedKey(page)});
-        query.invalidateQueries({queryKey: getPostsNewfeedDetailKey(postId, page)});
-      }
-    })
+  const handleUnLikePost = () => {
+    mutationUnLikePost.mutate();
+  }
 
-    const handleUnSavePost = () => {
-      mutationUnSavePost.mutate();
+  const mutationUnSavePost = useMutation({
+    mutationFn: () => unSavePost(postId),
+    onSuccess: () => {
+      query.invalidateQueries({queryKey: getPostsNewfeedKey(page)});
+      query.invalidateQueries({queryKey: getPostsNewfeedDetailKey(postId, page)});
     }
+  })
 
-    const mutationSavePost = useMutation({
-      mutationFn: () => savePost(postId),
-      onSuccess: () => {
-        query.invalidateQueries({queryKey: getPostsNewfeedKey(page)});
-        query.invalidateQueries({queryKey: getPostsNewfeedDetailKey(postId, page)});
-      }
-    })
+  const handleUnSavePost = () => {
+    mutationUnSavePost.mutate();
+  }
 
-    const handleSavePost = () => {
-      mutationSavePost.mutate();
+  const mutationSavePost = useMutation({
+    mutationFn: () => savePost(postId),
+    onSuccess: () => {
+      query.invalidateQueries({queryKey: getPostsNewfeedKey(page)});
+      query.invalidateQueries({queryKey: getPostsNewfeedDetailKey(postId, page)});
     }
+  })
+
+  const handleSavePost = () => {
+    mutationSavePost.mutate();
+  }
 
   return (
     <div>

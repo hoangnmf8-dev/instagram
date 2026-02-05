@@ -108,7 +108,7 @@ export default function PostContent({caption, createdAt, image, mediaType, userI
             <div className='flex items-center gap-1'>
               <h4 data-id={userId._id} className='text-black font-semibold text-[14px] hover:cursor-pointer' onClick={handleClickUser}>{userData?.data?.username}</h4>
               <span className='text-gray-500'>•</span>
-              <span className='text-gray-500 text-[12px]'>{userData?.data?.createdAt && calcTimeToNow(userData?.data?.createdAt)}</span>
+              <span className='text-gray-500 text-[12px]'>{userData?.data?.createdAt && calcTimeToNow(createdAt)}</span>
             </div>
             <p className='text-[11px] text-gray-500 font-300'>{userData?.data?.fullName}</p>
           </div> 

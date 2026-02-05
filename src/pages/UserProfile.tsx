@@ -36,6 +36,8 @@ import { getUserPost, getUserPostStats } from '@/services/postService'
 import { getUserPostKey, getUserPostStatsKey } from '@/cache_keys/postsKey'
 import LoadMoreTrigger from '@/components/LoadMoreTrigger'
 import PostItem from '@/components/Posttem/PostItem'
+import { getConversationsKey } from '@/cache_keys/messageKey'
+import { getConversations, getOrCreateConversation } from '@/services/messageService'
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
@@ -58,8 +60,21 @@ export default function UserProfile() {
     queryKey: userProfileKey(id),
     queryFn: () => getUserProfile(id),  
     staleTime: 100 * 1000,
-    retry: 3
+    retry: 3,
+    enabled: !!id
   })
+
+  const mutationGetOrCreateConversation = useMutation({
+    mutationFn: (userId) => getOrCreateConversation(userId),
+    onSuccess: (data, userId) => {
+      navigate(`/message-detail/${userId}?conversationId=${data.data._id}`);
+      query.invalidateQueries({queryKey: getConversationsKey});
+    }
+  })
+
+  const handleGetOrCreateConversation = (userId) => {
+    mutationGetOrCreateConversation.mutate(userId);
+  }
 
   useEffect(() => {
     if(userData && profileData?.data?._id === userData?.data?._id) {
@@ -97,12 +112,14 @@ export default function UserProfile() {
     queryKey: getFollowersKey(userData?.data?._id),
     queryFn: () => getFollowers(userData?.data?._id),
     retry: 3,
+    enabled: !!userData?.data?._id
   });
 
   const {data: followingData, isLoading: isLoadingGetFollowing} = useQuery({
     queryKey: getFollowingKey(userData?.data?._id),
     queryFn: () => getFollowing(userData?.data?._id),
     retry: 3,
+    enabled: !!userData?.data?._id
   });
 
   const handleGetFollowers = () => {
@@ -137,10 +154,9 @@ export default function UserProfile() {
       return offset + posts.length;
     }
   });
-  console.log("🚀 ~ UserProfile ~ userPostData:", userPostData)
   
   return (
-    <div className='flex-1 px-5 py-7.5'>
+    <div className='flex-1 px-5 py-7.5 relative left-20'>
       {(userLoading || profileLoading) && <Loading width='w-10' border='border-4 border-insta-blue' position='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'/>}
       <div className='max-w-250 mx-auto'>
         <div className='max-w-170 mx-auto'>
@@ -214,7 +230,7 @@ export default function UserProfile() {
                     {mutationFollowUser.isPending ? <Spinner width='w-5' border="border-2 border-white"/> : "Follow"}
                   </Button>
                 }
-                <Button className='basis-1/2 bg-insta-blue hover:bg-blue-500 hover:cursor-pointer'>Message</Button>
+                <Button className='basis-1/2 bg-insta-blue hover:bg-blue-500 hover:cursor-pointer' onClick={() => handleGetOrCreateConversation(userData?.data?._id)}>Message</Button>
               </div>)
             }
           </div>

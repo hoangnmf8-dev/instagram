@@ -58,7 +58,7 @@ export default function Home() {
     mutationFollowUser.mutate(id)
   }
   return (
-    <div>
+    <div className='relative left-20'>
       <div className='max-w-5xl mx-auto'>
         <div className='flex w-full'>
           <div className='basis-2/3'>

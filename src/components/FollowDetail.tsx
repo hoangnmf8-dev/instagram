@@ -28,7 +28,7 @@ export default function FollowDetail({follow, userId, setOpenFollowers}) {
       query.invalidateQueries({queryKey: userProfileKey(userId)});
       query.invalidateQueries({queryKey: profileKey});
       query.invalidateQueries({queryKey: getFollowersKey(userId)});
-      query.invalidateQueries({queryKey: getFollowingKey(user.id)});
+      query.invalidateQueries({queryKey: getFollowingKey(userId)});
     }
   });
 
@@ -41,7 +41,7 @@ export default function FollowDetail({follow, userId, setOpenFollowers}) {
     onSuccess: (data, userId) => {
       query.invalidateQueries({queryKey: userProfileKey(userId)});
       query.invalidateQueries({queryKey: getFollowersKey(userId)});
-      query.invalidateQueries({queryKey: getFollowingKey(user.id)});
+      query.invalidateQueries({queryKey: getFollowingKey(userId)});
       query.invalidateQueries({queryKey: profileKey});
     }
   });
@@ -58,7 +58,7 @@ export default function FollowDetail({follow, userId, setOpenFollowers}) {
       setOpenFollowers(false);
     }
   return (
-    <div key={follow._id} className='flex justify-between items-center'>
+    <div key={follow?._id} className='flex justify-between items-center'>
       <div className='flex flex-1 gap-2 items-center hover:cursor-pointer' data-id={follow?._id} onClick={handleClickUser}>
         <Avatar className='w-11 h-11'>
           <AvatarImage src={follow?.profilePicture ? `${BASE_URL}${follow?.profilePicture}` : "/common_img/meme-hai-1.jpg"} className="w-full h-full object-cover"/>

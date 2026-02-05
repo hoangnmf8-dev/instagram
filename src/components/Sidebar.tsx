@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import { NavLink, useNavigate, Link } from 'react-router-dom';
-import { HomeIcon, InstagramIcon, MessageIcon, SearchIcon, ExploreIcon, NotifyIcon, CreateIcon, MoreIcon, ReelIcon, CreatePostImgIcon, } from './InstagramIcon';
+import { HomeIcon, InstagramIcon, MessageIcon, SearchIcon, ExploreIcon, NotifyIcon, CreateIcon, MoreIcon, ReelIcon, CreatePostImgIcon, ActiveHomeIcon, ActiveReelIcon, ActiveMessageIcon, ActiveExploreIcon, } from './InstagramIcon';
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -53,7 +53,7 @@ import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/rea
 import { toast, Toaster } from 'sonner';
 import useDebounce from '@/hooks/useDebounce';
 import { searchUserKey, getSearchHistoryKey } from '@/cache_keys/searchKey';
-import { X } from 'lucide-react';
+import { Icon, X } from 'lucide-react';
 import Loading from './Loading';
 import { FormControl, FormField, FormItem, FormMessage, FormLabel } from "@/components/ui/form"
 import { createPostSchema, CreatePostValues } from '@/schemas/createPostSchema';
@@ -78,24 +78,28 @@ export default function Sidebar() {
       id: 1,
       to: "/",
       Icon: HomeIcon,
+      ActiveIcon: ActiveHomeIcon,
       title: "Home"
     },
     {
       id: 2,
       to: "/reels",
       Icon: ReelIcon,
+      ActiveIcon: ActiveReelIcon,
       title: "Reels"
     },
     {
       id: 3,
       to: "/message",
       Icon: MessageIcon,
+      ActiveIcon: ActiveMessageIcon,
       title: "Messages"
     },
     {
       id: 4,
       to: "/explore",
       Icon: ExploreIcon,
+      ActiveIcon: ActiveExploreIcon,
       title: "Explore"
     },
   ]
@@ -251,7 +255,7 @@ export default function Sidebar() {
   }, [previewCreateFile]);
   
   return (
-    <aside className="fixed top-0 bottom-0 left-0 w-64 border-r h-screen p-4 shadow-lg z-40 bg-white">
+    <aside className="fixed top-0 bottom-0 left-0 w-12.5 overflow-hidden h-screen py-4 hover:shadow-lg z-40 bg-white hover:w-64 transiton-all duration-200">
       <nav className='flex flex-col justify-between py-4 h-full'>
         <Link to="/" className='pl-3'><InstagramIcon /></Link>
         <div className='flex-1 flex justify-center gap-4 flex-col'>
@@ -260,20 +264,21 @@ export default function Sidebar() {
               key={item.id} 
               to={item.to} 
               className={({ isActive }) => 
-                `w-full flex items-center gap-4 p-3 rounded-lg transition-all ${isActive ? "bg-gray-300" : "hover:bg-gray-200"}`
+                `w-64 flex items-center gap-4 p-3 rounded-lg transition-all hover:bg-gray-200`
               }
             >
-              {({ isActive }) => (
-                <>
-                  <item.Icon key={item.id}/>
+              {({ isActive }) => {
+                const IconComponnet =  isActive ? item.ActiveIcon : item.Icon;
+                return <>
+                  <IconComponnet key={item.id}/>
                   <span className={`${isActive ? "text-black font-bold" : "text-black font-normal"}`}>
                     {item.title}
                   </span>
                 </>
-              )}
+              }}
             </NavLink>
           ))}
-          <div className='p-3 rounded-lg transition-all hover:bg-gray-200 hover:cursor-pointer'>
+          <div className='w-64 p-3 rounded-lg transition-all hover:bg-gray-200 hover:cursor-pointer'>
             <Sheet open={openSearch} onOpenChange={setOpenSearch}>
               <SheetTrigger className='w-full flex items-center hover:cursor-pointer gap-4'>
                 <SearchIcon />
@@ -355,18 +360,18 @@ export default function Sidebar() {
               </SheetContent>
             </Sheet>
           </div>
-          <div className='flex items-center gap-4 p-3 rounded-lg transition-all hover:bg-gray-200 hover:cursor-pointer'>
+          <div className='w-64 flex items-center gap-4 p-3 rounded-lg transition-all hover:bg-gray-200 hover:cursor-pointer'>
             <NotifyIcon />
             <span>Notifications</span>
           </div>
-          <div className='flex items-center gap-4 p-3 rounded-lg transition-all hover:bg-gray-200 hover:cursor-pointer'>
-            <div className='flex items-center gap-4' onClick={() => setOpenCreatePost(true)}>
+          <div className='w-full flex items-center gap-4 p-3 rounded-lg transition-all hover:bg-gray-200 hover:cursor-pointer'>
+            <div className='w-64 flex items-center gap-4' onClick={() => setOpenCreatePost(true)}>
               <CreateIcon />
               <span>Create</span>
             </div>
             <Dialog open={openCreatePost} onOpenChange={handleCloseCreatePost}>
               <DialogContent className='sm:max-w-200 p-0 max-h-153 flex flex-col gap-0'>
-                <DialogHeader className='sr-only'>
+                <DialogHeader className='sr-only w-full'>
                   <DialogTitle>Create Post</DialogTitle>
                   <DialogDescription>
                   </DialogDescription>
@@ -424,20 +429,26 @@ export default function Sidebar() {
               </DialogContent>
             </Dialog>
           </div>
-          <NavLink to={`/user/${user?._id}`} className={({ isActive }) => `flex items-center gap-4 p-3 rounded-lg transition-all ${isActive ? "font-bold bg-gray-300" : "hover:bg-gray-200"}`
+          <NavLink to={`/user/${user?._id}`} className={({ isActive }) => `flex items-center gap-4 p-3 rounded-lg transition-all hover:bg-gray-200`
               }>
-            <Avatar>
-              <AvatarImage
-                src={user?.profilePicture ? `${BASE_URL}${user?.profilePicture}` : "/common_img/meme-hai-1.jpg"}
-                alt="@shadcn"
-                className="object-cover"
-              />
-              <AvatarFallback>{user?.username.slice(0,1)}</AvatarFallback>
-            </Avatar>
-            <span>Profile</span>
+            {({isActive}) => {
+              return (
+                <>
+                  <Avatar className={`${isActive ? "border-2 border-black" : ""}`}>
+                    <AvatarImage
+                      src={user?.profilePicture ? `${BASE_URL}${user?.profilePicture}` : "/common_img/meme-hai-1.jpg"}
+                      alt="@shadcn"
+                      className={`object-cover`}
+                    />
+                    <AvatarFallback>{user?.username.slice(0,1)}</AvatarFallback>
+                  </Avatar>
+                  <span>Profile</span>
+                </>
+              )
+            }}
           </NavLink>
         </div>
-        <div className='flex items-center gap-4 p-3 rounded-lg transition-all hover:bg-gray-200 hover:cursor-pointer'>
+        <div className='flex items-center gap-4 px-3 py-2 rounded-lg transition-all hover:bg-gray-200 hover:cursor-pointer'>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button className='w-full outline-none! bg-transparent text-black border-none! shadow-none hover:bg-transparent hover:cursor-pointer flex items-center justify-start gap-4 p-0! text-[18px] font-light focus-visible:ring-[0]'><MoreIcon />More</Button>

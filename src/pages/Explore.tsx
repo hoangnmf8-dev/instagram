@@ -27,7 +27,7 @@ export default function Explore() {
   })
   
   return (
-    <div>
+    <div className='relative left-20'>
       <div className='max-w-5xl mx-auto px-6 mt-12'>
         <div className="flex flex-wrap">
           {postExploreData?.pages?.map((page, index) => <React.Fragment key={index}>

@@ -9,7 +9,6 @@ import { Image } from 'lucide-react';
 import { Video } from 'lucide-react';
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 export default function PostItem({post, page}) {
-  console.log("🚀 ~ PostItem ~ post:", post)
   const {data: userData} = useQuery({
     queryKey: userProfileKey(post?.userId?._id),
     queryFn: () => getUserProfile(post?.userId?._id),
@@ -50,7 +49,7 @@ export default function PostItem({post, page}) {
 
   if(page === "explore") {
     return (
-      <div className='basis-1/3 w-1/3 p-[0.5px] hover:cursor-pointer hover:brightness-70' onClick={() => setOpenPostDetail(true)}>
+      <div className='basis-1/3 w-1/3 min-h-50 p-[0.5px] hover:cursor-pointer hover:brightness-70' onClick={() => setOpenPostDetail(true)}>
         {
           post?.mediaType === "image" ? 
         (<div className='bg-black h-full w-full flex items-center justify-center relative'>
@@ -71,7 +70,7 @@ export default function PostItem({post, page}) {
 
   if(page === "user-profile") {
       return (
-        <div className='basis-1/3 w-1/3 p-[0.5px] hover:cursor-pointer hover:brightness-70' onClick={() => setOpenPostDetail(true)}>
+        <div className='basis-1/3 w-1/3 min-h-50 p-[0.5px] hover:cursor-pointer hover:brightness-70' onClick={() => setOpenPostDetail(true)}>
         {
           post?.mediaType === "image" ? 
         (<div className='bg-black h-full w-full flex items-center justify-center relative'>

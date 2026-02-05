@@ -7,12 +7,13 @@ type Props = {
   userData: any,
   onClick: () => void,
   caption: null | string,
-  className: string
+  className: string,
+  size: string,
 }
-export default function UserInfo({userData, onClick, caption = null, className = ""}: Props) {
+export default function UserInfo({userData, onClick, caption = null, className = "", size="w-10 h-10"}: Props) {
   return (
     <div className={`flex gap-2 ${className}`}>
-      <Avatar className='w-10 h-10'>
+      <Avatar className={size}>
         <AvatarImage src={userData?.profilePicture ? `${BASE_URL}${userData?.profilePicture}` : "/common_img/meme-hai-1.jpg"} className="w-full h-full object-cover"/>
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>

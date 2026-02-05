@@ -47,7 +47,6 @@ export const verifyEmail = async (slug: string) => {
     const response = await httpRequest.post(`/api/auth/verify-email/${slug}`)
     return response.data;
   } catch(error) {
-    console.log("🚀 ~ verifyEmail ~ error:", error)
     const errorMessage = error?.response?.data?.message || "An unexpected error occurred";
     throw new Error(errorMessage);
   }

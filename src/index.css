@@ -143,3 +143,11 @@ body {
     rotate: 360deg;
   }
 }
+
+@keyframes subtleBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); } 
+}
+.animate-subtle {
+  animation: subtleBounce 0.6s infinite ease-in-out;
+}
