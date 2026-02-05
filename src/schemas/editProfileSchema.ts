@@ -14,27 +14,27 @@ export const editProfileSchema = z.object({
 export type editProfileValues = z.infer<typeof editProfileSchema>;
 
 export const changePasswordSchema = z.object({
-  currentPassword: z.string().trim().min(8, "Mật khẩu phải có tối thiểu 8 kí tự")
-  .regex(/[A-Z]/, "Mật khẩu phải có tối thiểu 1 chữ in hoa")
-  .regex(/[a-z]/, "Mật khẩu phải có tối thiểu 1 chữ in thường"),
-  newPassword: z.string().trim().min(8, "Mật khẩu phải có tối thiểu 8 kí tự")
-  .regex(/[A-Z]/, "Mật khẩu phải có tối thiểu 1 chữ in hoa")
-  .regex(/[a-z]/, "Mật khẩu phải có tối thiểu 1 chữ in thường"),
-  confirmPassword: z.string().trim().min(8, "Xác nhận mật khẩu phải có tối thiểu 8 kí tự")
-  .regex(/[A-Z]/, "Xác nhận mật khẩu phải có tối thiểu 1 chữ in hoa")
-  .regex(/[a-z]/, "Xác nhận mật khẩu phải có tối thiểu 1 chữ in thường"),
+  currentPassword: z.string().trim().min(8, "Password must be at least 8 characters long.")
+  .regex(/[A-Z]/, "Password must contain at least one uppercase letter.")
+  .regex(/[a-z]/, "Password must contain at least one lowercase letter."),
+  newPassword: z.string().trim().min(8, "Password must be at least 8 characters long.")
+  .regex(/[A-Z]/, "Password must contain at least one uppercase letter.")
+  .regex(/[a-z]/, "Password must contain at least one lowercase letter."),
+  confirmPassword: z.string().trim().min(8, "Confirm password must be at least 8 characters.")
+  .regex(/[A-Z]/, "Confirm password must contain at least one uppercase letter.")
+  .regex(/[a-z]/, "Confirm password must contain at least one lowercase letter."),
 }).superRefine(({currentPassword, newPassword, confirmPassword}, context) => {
   if(newPassword !== confirmPassword) {
     context.addIssue({
       code: "custom",
-      message: "Xác nhận mật khẩu không khớp",
+      message: "Confirm password does not match.",
       path: ["confirmPassword"]
     })
   }
   if(newPassword === currentPassword) {
     context.addIssue({
       code: "custom",
-      message: "Mật khẩu mới phải khác mật khẩu cũ",
+      message: "New password must be unique from your current password.",
       path: ["newPassword"]
     })
   }

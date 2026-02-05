@@ -5,7 +5,7 @@ export const sendMessageSchema = z.object({
   content: z.string().trim().optional(),
   image : z.any() 
   .optional() 
-  .refine((image) => !image || image.length === 0 || ACCEPTED_IMAGE_TYPES.includes(image?.[0]?.type), "Ảnh không đúng định dạng") //callback trong refine trả về true sẽ không kích hoạt message
+  .refine((image) => !image || image.length === 0 || ACCEPTED_IMAGE_TYPES.includes(image?.[0]?.type), "The file is not in the correct format.") //callback trong refine trả về true sẽ không kích hoạt message
   .refine((image) => {
     const fileSize = +(image?.[0]?.size / (1024 * 1024)).toFixed(2)
     return !image || image.length === 0 || fileSize <= 10

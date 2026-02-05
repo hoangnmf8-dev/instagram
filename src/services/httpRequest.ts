@@ -4,7 +4,6 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
 let resfreshPromise = null;
 
 export const handleLogout = async () => {
-  console.log(1)
   try {
     const response = await fetch(`${BASE_URL}/api/auth/logout`, {
       method: "POST",
@@ -19,7 +18,9 @@ export const handleLogout = async () => {
     window.location.href = "/login";
     return response.json();
   } catch(error) {
-    return Promise.reject(error);
+    useAuth.getState().setUser(null);
+    useAuth.getState().setToken(null);
+    window.location.href = "/login";
   }
 }
 
@@ -59,18 +60,20 @@ httpRequest.interceptors.response.use(response => response,
   async (error) => {
     const originalRequest = error.config; 
     if(error.status === 401) {
-      // if (originalRequest.url.includes("/api/auth/login")) {
-      //   return Promise.reject(error);
-      // }
+      if (originalRequest.url.includes("/api/auth/login")) {
+        return Promise.reject(error);
+      }
       if(!resfreshPromise) {
         resfreshPromise = getNewToken();
       }
       const {data} = await resfreshPromise;
-      if(data.accessToken) {
+      resfreshPromise = null;
+      if(data && data.accessToken) {
         useAuth.getState().setToken(data);
+        return httpRequest(error.config);
       } else {
-        console.log(1)
         handleLogout();
+        return;
       }
     }
     return Promise.reject(error);

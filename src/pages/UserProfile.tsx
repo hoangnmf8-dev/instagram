@@ -43,7 +43,7 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export default function UserProfile() {
   const {user, setUser} = useAuth();
-  const {id} = useParams();
+  const param = useParams();
   const query = useQueryClient();
   const [openFollowers, setOpenFollowers] = useState(false);
   const [isFollowers, setIsFollowers] = useState("");
@@ -57,11 +57,10 @@ export default function UserProfile() {
   })
 
   const {data: userData, isLoading: userLoading} = useQuery({
-    queryKey: userProfileKey(id),
-    queryFn: () => getUserProfile(id),  
+    queryKey: userProfileKey(param.id),
+    queryFn: () => getUserProfile(param.id),  
     staleTime: 100 * 1000,
-    retry: 3,
-    enabled: !!id
+    enabled: !!param.id
   })
 
   const mutationGetOrCreateConversation = useMutation({
@@ -152,7 +151,8 @@ export default function UserProfile() {
       const {offset, posts, hasMore} = lastPage?.data;
       if(!hasMore) return undefined;
       return offset + posts.length;
-    }
+    },
+    enabled: !!userData?.data?._id
   });
   
   return (

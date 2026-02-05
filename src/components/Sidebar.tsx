@@ -70,6 +70,7 @@ export default function Sidebar() {
   const [openSearch, setOpenSearch] = useState<boolean>(false);
   const [openChangePassword, setOpenChangePassword] = useState<boolean>(false);
   const [previewCreateFile, setPreviewCreateFile] = useState<string>("");
+  const [fileType, setFileType] = useState<string>("");
   const debounceValue = useDebounce<string>(value, 500);
   const navigate = useNavigate();
 
@@ -243,7 +244,7 @@ export default function Sidebar() {
   }
 
   const handleCloseCreatePost = () => {
-    formCreatePost.setValue("caption", "");
+    formCreatePost.reset();
     setPreviewCreateFile("");
     setOpenCreatePost(false);
   }
@@ -387,18 +388,27 @@ export default function Sidebar() {
                           render={({ field }) => (
                             <FormItem className='basis-3/5 flex flex-col items-center border-r p-4'>
                               <div>
-                                {previewCreateFile ? 
-                                  <img src={`${previewCreateFile}`} alt="image_create" />
-                                  :
-                                  <CreatePostImgIcon />
-                                }
+                                {previewCreateFile ? (
+                                  fileType.startsWith("video/") ? (
+                                    <video 
+                                      src={previewCreateFile} 
+                                      controls 
+                                      className="max-h-90 object-contain"
+                                    />
+                                  ) : (
+                                    <img src={previewCreateFile} alt="preview" className="max-h-80 w-full object-contain" />
+                                    )
+                                  ) : (
+                                    <CreatePostImgIcon />
+                                )}
                               </div>
                               <FormLabel htmlFor="picture" className='bg-[#4a5df9] text-white px-3 py-2 rounded-lg justify-center hover:cursor-pointer hover:bg-[#4a5ddf]'>Select form computer</FormLabel>
                               <FormControl>
-                                <Input id="picture" type="file" className='hidden' accept='image/*' onChange={(e) => {
+                                <Input id="picture" type="file" className='hidden' onChange={(e) => {
                                     const files = e.target.files;
                                     if (files && files.length > 0) {
                                       setPreviewCreateFile(URL.createObjectURL(files[0]));
+                                      setFileType(files[0].type)
                                       field.onChange(files); //Chỉ truyền FileList vào để phù hợp với schema  
                                     }
                                   }}

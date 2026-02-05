@@ -17,6 +17,7 @@ export const getProfile = async () => {
 }
 
 export const getUserProfile = async (id: string) => {
+  if(!id) return;
   try {
     const response = await httpRequest.get(`/api/users/${id}`);
     return response.data;
