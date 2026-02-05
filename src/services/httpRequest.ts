@@ -4,11 +4,12 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
 let resfreshPromise = null;
 
 export const handleLogout = async () => {
+  console.log(1)
   try {
     const response = await fetch(`${BASE_URL}/api/auth/logout`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${useAuth.getState().token?.accessToken}`,
+        Authorization: `Bearer ${useAuth.getState().token?.refreshToken}`,
         "Content-Type": "application/json"
       }
     });
@@ -16,7 +17,7 @@ export const handleLogout = async () => {
     useAuth.getState().setUser(null);
     useAuth.getState().setToken(null);
     window.location.href = "/login";
-    return response.data;
+    return response.json();
   } catch(error) {
     return Promise.reject(error);
   }
@@ -30,7 +31,7 @@ const getNewToken = async () => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        refreshToken: useAuth.getState().token.refreshToken
+        refreshToken: useAuth.getState().token?.refreshToken 
       })
     });
     if(!response.ok) throw new Error();
@@ -58,9 +59,9 @@ httpRequest.interceptors.response.use(response => response,
   async (error) => {
     const originalRequest = error.config; 
     if(error.status === 401) {
-      if (originalRequest.url.includes("/api/auth/login")) {
-        return Promise.reject(error);
-      }
+      // if (originalRequest.url.includes("/api/auth/login")) {
+      //   return Promise.reject(error);
+      // }
       if(!resfreshPromise) {
         resfreshPromise = getNewToken();
       }
@@ -68,6 +69,7 @@ httpRequest.interceptors.response.use(response => response,
       if(data.accessToken) {
         useAuth.getState().setToken(data);
       } else {
+        console.log(1)
         handleLogout();
       }
     }

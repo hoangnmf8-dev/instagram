@@ -187,7 +187,7 @@ export default function UserProfile() {
                         "Following"
                       }</DialogTitle>
                       <hr />
-                      <DialogDescription className='p-4' asChild>
+                      <DialogDescription className='p-4 max-h-80 overflow-auto' asChild>
                         <div className='flex flex-col gap-3'>
                           {
                             isFollowers === "followers" ? 

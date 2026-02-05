@@ -208,7 +208,7 @@ export default function PostDetail({openPostDetail, setOpenPostDetail, postId, p
                       </form>
                     </div>
                   </div>
-                  : <Spinner width="w-8" border="border-3 border-insta-blue"/>
+                  : <Spinner className="size-8"/>
                   }  
               </DialogContent>
             </Dialog>
@@ -220,7 +220,7 @@ export default function PostDetail({openPostDetail, setOpenPostDetail, postId, p
                 <DialogTitle className='flex justify-center'>
                   {
                     isLoadingPostDetail ?
-                    <Spinner width="w-8" border="border-3 border-insta-blue"/>
+                    <Spinner />
                     :
                     <p className='text-red-500 font-semibold text-2xl text-center'>This article no longer exists.</p>
                   }

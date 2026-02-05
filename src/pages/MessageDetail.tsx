@@ -150,17 +150,18 @@ export default function MessageDetail() {
   }, [socket, conversationIdFromUrl, query]);
 
   const handleType = () => {
+    console.log(1)
     socket?.emit("typing", {
-      conversationId: "conv_id",
-      recipientId: "user_id",
+      conversationId: conversationIdFromUrl,
+      recipientId: location.pathname.replace("/message-detail/", ""),
     });
 
     clearTimeout(stopTyping.current);
 
     stopTyping.current = setTimeout(() => {
       socket?.emit("stop_typing", {
-        conversationId: "conv_id",
-        recipientId: "user_id",
+        conversationId: conversationIdFromUrl,
+        recipientId: location.pathname.replace("/message-detail/", ""),
       });
     }, 500)
   }

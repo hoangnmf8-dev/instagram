@@ -132,6 +132,7 @@
 body {
   font-family: Geologica, sans-serif;
   font-weight: 300;
+  overflow-x: hidden;
 }
 
 .spin {
