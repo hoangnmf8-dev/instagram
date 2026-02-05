@@ -38,6 +38,7 @@ import LoadMoreTrigger from '@/components/LoadMoreTrigger'
 import PostItem from '@/components/Posttem/PostItem'
 import { getConversationsKey } from '@/cache_keys/messageKey'
 import { getConversations, getOrCreateConversation } from '@/services/messageService'
+import SkeletonPost from '@/components/Skeleton/SkeletonPost'
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
@@ -85,8 +86,10 @@ export default function UserProfile() {
     mutationFn: (userId) => unFollowUser(userId),
     onSuccess: (data, userId) => {
       query.invalidateQueries({queryKey: userProfileKey(userId)});
+      query.invalidateQueries({queryKey: userProfileKey(user?._id)});
       query.invalidateQueries({queryKey: profileKey});
       query.invalidateQueries({queryKey: getFollowingKey(user?._id)});
+      query.invalidateQueries({queryKey: getFollowersKey(userId)});
     }
   });
 
@@ -98,8 +101,10 @@ export default function UserProfile() {
     mutationFn: (userId) => followUser(userId),
     onSuccess: (data, userId) => {
       query.invalidateQueries({queryKey: userProfileKey(userId)});
+      query.invalidateQueries({queryKey: userProfileKey(user?._id)});
       query.invalidateQueries({queryKey: profileKey});
       query.invalidateQueries({queryKey: getFollowingKey(user?._id)});
+      query.invalidateQueries({queryKey: getFollowersKey(userId)});
     }
   });
 
@@ -139,7 +144,7 @@ export default function UserProfile() {
   })
 
 
-  const {data: userPostData, hasNextPage, isFetchingNextPage, fetchNextPage} = useInfiniteQuery({
+  const {data: userPostData, hasNextPage, isFetchingNextPage, fetchNextPage, isLoading} = useInfiniteQuery({
     queryKey: getUserPostKey(userData?.data?._id),
     queryFn: ({pageParam}) => {
       return getUserPost({
@@ -256,7 +261,7 @@ export default function UserProfile() {
                   <CardTitle className='text-center'>
                     <div className='max-w-5xl mx-auto mt-[0.5px]'>
                       <div className="flex flex-wrap">
-                        {userPostData?.pages?.map((page, index) => <React.Fragment key={index}>
+                        {isLoading ? Array(20).fill(0).map((_, index) => <SkeletonPost key={index} index={index}/>) : userPostData?.pages?.map((page, index) => <React.Fragment key={index}>
                           {page?.data?.posts.map((post: any) => <PostItem key={post?._id} post={post} page="user-profile"/>)}
                         </React.Fragment>) }
                         <LoadMoreTrigger

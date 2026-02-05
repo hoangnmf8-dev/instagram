@@ -20,7 +20,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { toast, Toaster } from 'sonner';
 import { useEffect, useRef, useState, use } from 'react';
 import Spinner from '@/components/Spinner';
-import { SocketContext } from '@/layouts/MessageLayout';
+import { SocketContext } from '@/layouts/MainLayout';
 import TypingIndicator from '@/components/TypingIndicator';
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
@@ -34,7 +34,10 @@ export default function MessageDetail() {
   const messageBoxRef = useRef<HTMLDivElement>(null);
   const lastMessageRef = useRef<HTMLDivElement>(null);
   const [preview, setPreview] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isShowTyping, setShowTyping] = useState<boolean>(false);
+  const [fileKey, setFileKey] = useState(0);
+
 
   let stopTyping = useRef<number | null>(null);
 
@@ -65,6 +68,7 @@ export default function MessageDetail() {
       query.invalidateQueries({queryKey: getConversationsKey});
       formSendMessage.setValue("content","");
       setPreview("");
+      formSendMessage.reset();
     },
     onError: (error) => {
       toast.error(error.message);
@@ -78,6 +82,7 @@ export default function MessageDetail() {
       query.invalidateQueries({queryKey: getConversationsKey});
       formSendMessage.setValue("content","");
       setPreview("");
+      formSendMessage.reset();
     },
     onError: (error) => {
       toast.error(error.message);
@@ -143,14 +148,13 @@ export default function MessageDetail() {
         queryKey: getMessageInConversationKey(conversationIdFromUrl) 
       });
     };
-    socket.on("new_message", handleNewMessage);
+    socket?.on("new_message", handleNewMessage);
     return () => {
-      socket.off("new_message", handleNewMessage);
+      socket?.off("new_message", handleNewMessage);
     };
   }, [socket, conversationIdFromUrl, query]);
 
   const handleType = () => {
-    console.log(1)
     socket?.emit("typing", {
       conversationId: conversationIdFromUrl,
       recipientId: location.pathname.replace("/message-detail/", ""),
@@ -172,14 +176,14 @@ export default function MessageDetail() {
         setShowTyping(true);
       }
     }
-    socket.on("user_typing", handleTyping);
+    socket?.on("user_typing", handleTyping);
     const handleStopTyping = ({ conversationId, userId }) => {
       if(conversationId === conversationIdFromUrl) {
         setShowTyping(false);
       }
     }
     // Receive stop typing
-    socket.on("user_stop_typing", handleStopTyping);
+    socket?.on("user_stop_typing", handleStopTyping);
 
     return () => {
       socket?.off("user_typing", handleTyping);
@@ -231,7 +235,13 @@ export default function MessageDetail() {
       flex flex-col bg-white z-40 px-6 ${preview && "pt-4"}`}>
         {preview && <div className='relative w-80'>
           <img className='w-full block' src={`${preview}`} />
-          <div className='absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 aspect-square border rounded-full flex items-center justify-center hover:cursor-pointer' onClick={() => setPreview("")}><X className='size-4'/></div>
+          <div className='absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 aspect-square border rounded-full flex items-center justify-center hover:cursor-pointer' onClick={() => {
+            setPreview("");
+            formSendMessage.reset();
+            if(fileInputRef.current) {
+              fileInputRef.current.value = ""; //can thiệp trực tiếp vào dom
+            }
+          }}><X className='size-4'/></div>
         </div>}
         <Form {...formSendMessage}>
           <form className='flex flex-1 gap-3 items-center' onSubmit={formSendMessage.handleSubmit(onSubmit)}>
@@ -248,7 +258,9 @@ export default function MessageDetail() {
                           setPreview(url);
                           field.onChange(e.target.files)
                         }
-                      }} className='hidden' id="image-message" type='file'/>
+                      }} 
+                      ref={fileInputRef}
+                      className='hidden' id="image-message" type='file' accept='image/*'/>
                   </FormControl>
                 </FormItem>
               )}
@@ -259,10 +271,10 @@ export default function MessageDetail() {
               render={({field}) => (
                 <FormItem className='flex-1 h-full'>
                   <FormControl>
-                      <Input {...field} className='h-full block border-none focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none' id="text-message" type='text' autoComplete={"off"} disabled={!!preview} onChange={(e) => {
+                      <Input {...field} className='h-full block border-none focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none placeholder:text-gray-400' id="text-message" type='text' autoComplete={"off"} disabled={!!preview} onChange={(e) => {
                         handleType();
                         field.onChange(e)
-                      }}/>
+                      }} placeholder={`${preview ? "" : "Enter message..."}`}/>
                   </FormControl>
                 </FormItem>
               )}

@@ -25,7 +25,7 @@ export default function VerifyEmail() {
       email: user?.email
     }),
     onSuccess: () => {
-      toast.success("Đã gửi lại email xác thực");
+      toast.success("A verification email has been resent.");
     }
   });
 

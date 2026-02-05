@@ -5,8 +5,7 @@ import { getUserProfile } from '@/services/userServices'
 import { useQuery } from '@tanstack/react-query'
 import { userProfileKey } from '@/cache_keys/userKey'
 import PostDetail from '../PostDetail/PostDetail'
-import { Image } from 'lucide-react';
-import { Video } from 'lucide-react';
+import { Video, Image } from 'lucide-react';
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 export default function PostItem({post, page}) {
   const {data: userData} = useQuery({
@@ -15,7 +14,7 @@ export default function PostItem({post, page}) {
     retry: 3,
     staleTime: 60 * 1000
   })
-
+  
   const [openPostDetail, setOpenPostDetail] = useState(false);
   
   if(page === "newfeed") {

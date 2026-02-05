@@ -58,7 +58,7 @@ import Loading from './Loading';
 import { FormControl, FormField, FormItem, FormMessage, FormLabel } from "@/components/ui/form"
 import { createPostSchema, CreatePostValues } from '@/schemas/createPostSchema';
 import { createPost } from '@/services/postService';
-import { getPostsNewfeedKey, getUserPostKey } from '@/cache_keys/postsKey';
+import { getPostsNewfeedKey, getUserPostKey, getUserPostStatsKey } from '@/cache_keys/postsKey';
 import { profileKey, userProfileKey } from '@/cache_keys/userKey';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -228,6 +228,7 @@ export default function Sidebar() {
       query.invalidateQueries({queryKey: getPostsNewfeedKey("explore")});
       query.invalidateQueries({queryKey: profileKey});
       query.invalidateQueries({queryKey: getUserPostKey(user?._id)});
+      query.invalidateQueries({queryKey: getUserPostStatsKey(user?._id)});
       toast.success("Create post successfully");
       handleCloseCreatePost();
     },
@@ -290,7 +291,7 @@ export default function Sidebar() {
                   <SheetTitle className='pt-3 pl-6 pr-3 pb-9 text-2xl font-semibold'>Search</SheetTitle>
                   <SheetDescription asChild>
                     <div>
-                      <Input className='rounded-2xl bg-gray-100 focus-visible:ring-0' value={value} onChange={(e) => setValue(e.target.value)} placeholder='Search'/>
+                      <Input className='rounded-2xl bg-gray-100 focus-visible:ring-0' value={value} onChange={(e) => setValue(e.target.value)} placeholder='Search' type='text'/>
                       <div className='flex justify-between items-center px-3 mt-4 mb-4'>
                         <h3>Recent</h3>
                         <Button className='bg-transparent text-insta-blue p-0 hover:bg-transparent hover:cursor-pointer' onClick={handleDeleteAllHistory}>Clear all</Button>
@@ -404,7 +405,7 @@ export default function Sidebar() {
                               </div>
                               <FormLabel htmlFor="picture" className='bg-[#4a5df9] text-white px-3 py-2 rounded-lg justify-center hover:cursor-pointer hover:bg-[#4a5ddf]'>Select form computer</FormLabel>
                               <FormControl>
-                                <Input id="picture" type="file" className='hidden' onChange={(e) => {
+                                <Input id="picture" type="file" accept='image/*, video/*' className='hidden' onChange={(e) => {
                                     const files = e.target.files;
                                     if (files && files.length > 0) {
                                       setPreviewCreateFile(URL.createObjectURL(files[0]));

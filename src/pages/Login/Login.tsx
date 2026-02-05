@@ -22,7 +22,7 @@ export default function Login() {
   const mutation = useMutation({
     mutationFn: (data) => login(data),
     onSuccess: ({data}) => {
-      toast.success("Đăng nhập thành công");
+      toast.success("Login Succesfully");
       setUser(data.user);
       setToken(data.tokens);
       navigate("/");

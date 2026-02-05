@@ -19,7 +19,7 @@ import { searchUserKey } from '@/cache_keys/searchKey'
 import useDebounce from '@/hooks/useDebounce';
 import { searchUser } from '@/services/searchService'
 import { useQuery } from '@tanstack/react-query'
-import Skeleton from "@/components/Skeleton"
+import Skeleton from "@/components/Skeleton/Skeleton"
 import { useNavigate } from 'react-router-dom'
 import { getOrCreateConversation } from '@/services/messageService'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -169,7 +169,7 @@ export default function MessageSidebar() {
           </div>
           <div className='flex flex-col py-2 items-center overflow-y-auto h-137'>
             {isFetchingSearchUser && Array(10).fill(0).map((_, index) => <Skeleton key={index}/>)}
-            {searchUserData?.data?.map(data => (
+            {searchUserData?.data && searchUserData?.data?.map(data => (
               <div key={data._id} data-id={data._id} className='flex w-full items-center justify-between px-4 py-2 rounded-md hover:bg-gray-100 hover:cursor-pointer' onClick={handleClickSearchUser}>
                 <div className='flex gap-2 w-full items-center'>
                   <Avatar className='w-9 h-9 rounded-full overflow-hidden'>
@@ -187,6 +187,7 @@ export default function MessageSidebar() {
                 </div>
               </div>
             ))}
+            {!searchUserData?.data && debounceValue && <p className='text-red-500 font-semibold mt-6'>User not found</p>}
           </div>
         </DialogContent>
       </Dialog>

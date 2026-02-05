@@ -23,7 +23,7 @@ import { LikeIcon, UnLikeIcon, UnSaveIcon, SaveIcon, CommentIcon, MessageIcon } 
 import calcTimeToNow from '@/utils/calcTimeToNow'
 import { Button } from '../ui/button'
 import { useForm } from 'react-hook-form'
-import { SkeletonAvatar } from '../SkeletonAvatar'
+import { SkeletonAvatar } from '../Skeleton/SkeletonAvatar'
 import { toast, Toaster } from 'sonner'
 import Loading from '../Loading'
 import Spinner from '../Spinner'
@@ -168,7 +168,7 @@ export default function PostDetail({openPostDetail, setOpenPostDetail, postId, p
           (
             <Dialog open={openPostDetail} onOpenChange={setOpenPostDetail}>
               <DialogTrigger></DialogTrigger>
-              <DialogContent className='sm:max-w-230 p-0 overflow-hidden border-none max-h-[90%]'>
+              <DialogContent className='sm:max-w-250 p-0 overflow-hidden border-none max-h-[90%]'>
                 <DialogHeader className='sr-only'>
                   <DialogTitle/>
                   <DialogDescription/>
@@ -177,7 +177,7 @@ export default function PostDetail({openPostDetail, setOpenPostDetail, postId, p
                     <div className='flex'>
                     <PostDetailContent mediaType={postDetail?.data?.mediaType} image={postDetail?.data?.image} video={postDetail?.data?.video}/>
 
-                    <div className='basis-3/5'>
+                    <div className='basis-2/5'>
                       <UserInfo userData={userData?.data} onClick={handleClickUser} className='p-4 w-[70%]'/>
                       <hr className='my-2'/>
                       {postDetail?.data?.caption && <UserInfo userData={userData?.data} onClick={handleClickUser} caption={postDetail?.data?.caption} className='p-4'/>}

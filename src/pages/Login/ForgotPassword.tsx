@@ -14,7 +14,7 @@ export default function ForgotPassword() {
   const mutation = useMutation({
     mutationFn: forgotPassword,
     onSuccess: () => {
-      toast.success("Đã gửi link reset mật khẩu đến email của bạn, vui lòng kiểm tra email để xác nhận");
+      toast.success("A password reset link has been sent to your email. Please check your inbox to confirm.");
     }, 
     onError: (error) => {
       toast.error(error.message);

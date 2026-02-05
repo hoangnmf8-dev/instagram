@@ -1,5 +1,5 @@
 import { BigMessageIcon } from '@/components/InstagramIcon'
-import { SocketContext } from '@/layouts/MessageLayout';
+import { SocketContext } from '@/layouts/MainLayout';
 import { use, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { getConversationsKey } from '@/cache_keys/messageKey';

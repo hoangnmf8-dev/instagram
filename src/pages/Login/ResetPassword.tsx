@@ -18,7 +18,7 @@ export default function ResetPassword() {
   const mutation = useMutation({
     mutationFn: (data) => resetPassword(data, param.token),
     onSuccess: () => {
-      toast.success("Thay đổi mật khẩu thành công, đang chuyển đến trang đăng nhập");
+      toast.success("Password changed successfully. Redirecting to the login page.");
       setTimeout(() => {
         navigate("/login");
       }, 1000)

@@ -23,12 +23,13 @@ export default function FollowDetail({follow, userId, setOpenFollowers}) {
  })
 
   const mutationUnFollowUser = useMutation({
-    mutationFn: (userId) => unFollowUser(userId),
-    onSuccess: (data, userId) => {
-      query.invalidateQueries({queryKey: userProfileKey(userId)});
-      query.invalidateQueries({queryKey: profileKey});
-      query.invalidateQueries({queryKey: getFollowersKey(userId)});
-      query.invalidateQueries({queryKey: getFollowingKey(userId)});
+    mutationFn: (followId) => unFollowUser(followId),
+    onSuccess: (data, followId) => {
+     query.invalidateQueries({ queryKey: userProfileKey(followId) });
+      query.invalidateQueries({ queryKey: userProfileKey(user?._id)});
+      query.invalidateQueries({ queryKey: profileKey });
+      query.invalidateQueries({ queryKey: getFollowingKey(user?._id)});
+      query.invalidateQueries({ queryKey: getFollowersKey(followId) });
     }
   });
 
@@ -37,12 +38,13 @@ export default function FollowDetail({follow, userId, setOpenFollowers}) {
   }
 
   const mutationFollowUser = useMutation({
-    mutationFn: (userId) => followUser(userId),
-    onSuccess: (data, userId) => {
-      query.invalidateQueries({queryKey: userProfileKey(userId)});
-      query.invalidateQueries({queryKey: getFollowersKey(userId)});
-      query.invalidateQueries({queryKey: getFollowingKey(userId)});
+    mutationFn: (followId) => followUser(followId),
+    onSuccess: (data, followId) => {
+      query.invalidateQueries({queryKey: userProfileKey(followId)}); //làm mới dữ liệu của họ
+      query.invalidateQueries({queryKey: userProfileKey(user?._id)}); //làm mới dữ liệu của mình
       query.invalidateQueries({queryKey: profileKey});
+      query.invalidateQueries({queryKey: getFollowersKey(followId)});
+      query.invalidateQueries({queryKey: getFollowingKey(user?._id)});
     }
   });
 
@@ -69,7 +71,7 @@ export default function FollowDetail({follow, userId, setOpenFollowers}) {
           <p className='text-[11px] text-gray-500 font-300'>{follow?.fullName}</p>
         </div>
       </div>
-      {userData?.data?.isFollowing ? 
+      {follow?._id !== user?._id && (userData?.data?.isFollowing ? 
         <Button className='bg-gray-300 text-black hover:cursor-pointer hover:bg-gray-500' onClick={() => handleUnFollowUser(follow?._id)}>
           {mutationUnFollowUser.isPending ? <Spinner width='w-5' border="border-2 border-white"/> : "UnFollow"}
         </Button>
@@ -77,7 +79,7 @@ export default function FollowDetail({follow, userId, setOpenFollowers}) {
         <Button className='bg-transparent text-insta-blue hover:cursor-pointer hover:text-blue-400 hover:bg-transparent' onClick={() => handleFollowUser(follow?._id)}>
           {mutationFollowUser.isPending ? <Spinner width='w-5' border="border-2 border-insta-blue"/> : "Follow"}
         </Button>
-      }
+      )}
     </div>
   )
 }
